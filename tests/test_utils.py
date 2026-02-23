@@ -281,8 +281,8 @@ class TestFormatArchivedFeeds:
 class TestFetchDatasets:
     """Test fetching datasets from MobilityDatabase API"""
 
-    @patch("app.utils.requests.get")
-    @patch("app.utils.get_mobility_db_auth_header")
+    @patch("src.utils.requests.get")
+    @patch("src.utils.get_mobility_db_auth_header")
     def test_fetch_datasets_with_results_dict(self, mock_auth, mock_get):
         """Test fetching datasets when API returns dict with 'results' key"""
         mock_auth.return_value = {"Authorization": "Bearer token"}
@@ -303,8 +303,8 @@ class TestFetchDatasets:
         assert len(result) == 1
         assert result[0]["service_date_range_start"] == "2025-11-07"
 
-    @patch("app.utils.requests.get")
-    @patch("app.utils.get_mobility_db_auth_header")
+    @patch("src.utils.requests.get")
+    @patch("src.utils.get_mobility_db_auth_header")
     def test_fetch_datasets_with_direct_list(self, mock_auth, mock_get):
         """Test fetching datasets when API returns direct list"""
         mock_auth.return_value = {"Authorization": "Bearer token"}
@@ -317,8 +317,8 @@ class TestFetchDatasets:
         assert isinstance(result, list)
         assert len(result) == 1
 
-    @patch("app.utils.requests.get")
-    @patch("app.utils.get_mobility_db_auth_header")
+    @patch("src.utils.requests.get")
+    @patch("src.utils.get_mobility_db_auth_header")
     def test_fetch_datasets_empty_results(self, mock_auth, mock_get):
         """Test fetching datasets with empty results"""
         mock_auth.return_value = {"Authorization": "Bearer token"}
@@ -331,8 +331,8 @@ class TestFetchDatasets:
         assert isinstance(result, list)
         assert len(result) == 0
 
-    @patch("app.utils.requests.get")
-    @patch("app.utils.get_mobility_db_auth_header")
+    @patch("src.utils.requests.get")
+    @patch("src.utils.get_mobility_db_auth_header")
     def test_fetch_datasets_invalid_response(self, mock_auth, mock_get):
         """Test fetching datasets with invalid response format"""
         mock_auth.return_value = {"Authorization": "Bearer token"}
@@ -345,8 +345,9 @@ class TestFetchDatasets:
         assert isinstance(result, list)
         assert len(result) == 0
 
-    @patch("app.utils.requests.get")
-    @patch("app.utils.get_mobility_db_auth_header")
+    @patch("src.utils.MOBILITY_DB_REFRESH_TOKEN", "fake-refresh-token")
+    @patch("src.utils.requests.get")
+    @patch("src.utils.get_mobility_db_auth_header")
     def test_fetch_datasets_with_valid_token(self, mock_auth, mock_get):
         """Test that auth header is used when token is provided"""
         mock_auth.return_value = {"Authorization": "Bearer valid-token"}
@@ -362,8 +363,8 @@ class TestFetchDatasets:
         assert "Authorization" in headers
         assert headers["Authorization"] == "Bearer valid-token"
 
-    @patch("app.utils.requests.get")
-    @patch("app.utils.get_mobility_db_auth_header")
+    @patch("src.utils.requests.get")
+    @patch("src.utils.get_mobility_db_auth_header")
     def test_fetch_datasets_http_error(self, mock_auth, mock_get):
         """Test handling of HTTP errors"""
         import requests
@@ -376,8 +377,8 @@ class TestFetchDatasets:
 
         assert "Failed to fetch datasets" in str(exc_info.value)
 
-    @patch("app.utils.requests.get")
-    @patch("app.utils.get_mobility_db_auth_header")
+    @patch("src.utils.requests.get")
+    @patch("src.utils.get_mobility_db_auth_header")
     def test_fetch_datasets_timeout(self, mock_auth, mock_get):
         """Test handling of timeout"""
         import requests
@@ -390,8 +391,8 @@ class TestFetchDatasets:
 
         assert "Failed to fetch datasets" in str(exc_info.value)
 
-    @patch("app.utils.requests.get")
-    @patch("app.utils.get_mobility_db_auth_header")
+    @patch("src.utils.requests.get")
+    @patch("src.utils.get_mobility_db_auth_header")
     def test_fetch_datasets_url_format(self, mock_auth, mock_get):
         """Test that correct URL is used for the API call"""
         mock_auth.return_value = {"Authorization": "Bearer token"}

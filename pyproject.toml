@@ -6,15 +6,16 @@ build-backend = "hatchling.build"
 name = "gtfs-archive-txt"
 version = "0.1.0"
 description = "GTFS archive text application"
-readme = "app/README.md"
+readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
 authors = [
-    {name = "TransitMatters", email = "team@transitmatters.org"}
+    {name = "Andrew Kouré", email = "andrew@koure.org"}
 ]
 dependencies = [
     "requests==2.31.0",
     "python-dotenv==1.2.1",
+    "chalice>=1.32.0",
 ]
 
 [project.optional-dependencies]
@@ -24,7 +25,7 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["app"]
+packages = ["src"]
 
 [tool.uv]
 # UV configuration
@@ -32,6 +33,7 @@ packages = ["app"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+pythonpath = ["src"]
 
 [tool.black]
 line-length = 88
@@ -39,5 +41,6 @@ target-version = ['py38']
 
 [dependency-groups]
 dev = [
+    "pytest>=8.4.2",
     "ruff>=0.14.6",
 ]

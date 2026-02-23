@@ -70,7 +70,7 @@ def generate_archived_feeds():
 
         return {
             "content": csv_content,
-            "count": len(datasets) - 1,  # Exclude header row
+            "count": len(datasets),
             "feed_id": feed_id,
         }
 

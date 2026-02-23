@@ -31,8 +31,8 @@ class TestIndexEndpoint:
 class TestGenerateArchivedFeedsEndpoint:
     """Test GET /generate endpoint"""
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_generate_returns_dict_with_valid_feed(self, mock_validate, mock_fetch):
         """Test successful generation with valid feed ID"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -52,8 +52,8 @@ class TestGenerateArchivedFeedsEndpoint:
             assert isinstance(response, dict)
             assert "content" in response
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_generate_includes_csv_content(self, mock_validate, mock_fetch):
         """Test that generate includes CSV content"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -73,8 +73,8 @@ class TestGenerateArchivedFeedsEndpoint:
             assert "feed_start_date" in response["content"]
             assert "20251107" in response["content"]
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_generate_includes_count(self, mock_validate, mock_fetch):
         """Test that response includes count"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -84,9 +84,9 @@ class TestGenerateArchivedFeedsEndpoint:
 
             response = generate_archived_feeds()
             assert "count" in response
-            assert response["count"] == 0  # 1 dataset - 1 header
+            assert response["count"] == 1
 
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.validate_feed_id")
     def test_generate_returns_400_with_invalid_feed_id(self, mock_validate):
         """Test that invalid feed ID returns 400"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -97,8 +97,8 @@ class TestGenerateArchivedFeedsEndpoint:
             assert isinstance(response, tuple)
             assert response[1] == 400
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_generate_returns_404_with_empty_results(self, mock_validate, mock_fetch):
         """Test that empty results return 404"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -110,8 +110,8 @@ class TestGenerateArchivedFeedsEndpoint:
             assert isinstance(response, tuple)
             assert response[1] == 404
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_generate_returns_401_with_auth_error(self, mock_validate, mock_fetch):
         """Test that auth errors return 401"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -123,8 +123,8 @@ class TestGenerateArchivedFeedsEndpoint:
             assert isinstance(response, tuple)
             assert response[1] == 401
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_generate_returns_500_with_generic_error(self, mock_validate, mock_fetch):
         """Test that generic errors return 500"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -136,8 +136,8 @@ class TestGenerateArchivedFeedsEndpoint:
             assert isinstance(response, tuple)
             assert response[1] == 500
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_generate_includes_feed_id(self, mock_validate, mock_fetch):
         """Test that response includes the feed_id"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -148,8 +148,8 @@ class TestGenerateArchivedFeedsEndpoint:
             response = generate_archived_feeds()
             assert response["feed_id"] == "mdb-503"
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_generate_with_filter_null_dates(self, mock_validate, mock_fetch):
         """Test generate with filter_null_dates parameter"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -175,8 +175,8 @@ class TestGenerateArchivedFeedsEndpoint:
 class TestDownloadArchivedFeedsEndpoint:
     """Test GET /download endpoint"""
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_download_returns_response_object(self, mock_validate, mock_fetch):
         """Test that download returns Response object"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -197,8 +197,8 @@ class TestDownloadArchivedFeedsEndpoint:
             response = download_archived_feeds()
             assert isinstance(response, Response)
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_download_returns_200(self, mock_validate, mock_fetch):
         """Test that download returns 200 status"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -217,8 +217,8 @@ class TestDownloadArchivedFeedsEndpoint:
             response = download_archived_feeds()
             assert response.status_code == 200
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_download_content_type_csv(self, mock_validate, mock_fetch):
         """Test that download has CSV content type"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -237,8 +237,8 @@ class TestDownloadArchivedFeedsEndpoint:
             response = download_archived_feeds()
             assert response.headers["Content-Type"] == "text/csv"
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_download_has_attachment_header(self, mock_validate, mock_fetch):
         """Test that download has Content-Disposition header"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -258,7 +258,7 @@ class TestDownloadArchivedFeedsEndpoint:
             assert "Content-Disposition" in response.headers
             assert "attachment" in response.headers["Content-Disposition"]
 
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.validate_feed_id")
     def test_download_returns_400_with_invalid_feed_id(self, mock_validate):
         """Test that invalid feed ID returns 400"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -268,8 +268,8 @@ class TestDownloadArchivedFeedsEndpoint:
             response = download_archived_feeds()
             assert response.status_code == 400
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_download_returns_404_with_empty_results(self, mock_validate, mock_fetch):
         """Test that empty results return 404"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -280,8 +280,8 @@ class TestDownloadArchivedFeedsEndpoint:
             response = download_archived_feeds()
             assert response.status_code == 404
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_download_has_cache_control_header(self, mock_validate, mock_fetch):
         """Test that download has Cache-Control header"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -305,7 +305,7 @@ class TestDownloadArchivedFeedsEndpoint:
 class TestArchivedFeedsTxtEndpoint:
     """Test GET /archived_feeds.txt endpoint"""
 
-    @patch("app.app.download_archived_feeds")
+    @patch("src.app.download_archived_feeds")
     def test_archived_feeds_txt_calls_download(self, mock_download):
         """Test that archived_feeds.txt calls download_archived_feeds"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -321,8 +321,8 @@ class TestArchivedFeedsTxtEndpoint:
 class TestQueryParameters:
     """Test query parameter handling"""
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_feed_id_parameter_extraction(self, mock_validate, mock_fetch):
         """Test that feed_id parameter is extracted"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -337,8 +337,8 @@ class TestQueryParameters:
             call_args = mock_validate.call_args[0]
             assert call_args[0] == "mdb-custom"
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_filter_null_dates_parameter_true(self, mock_validate, mock_fetch):
         """Test that filter_null_dates=true is recognized"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -360,8 +360,8 @@ class TestQueryParameters:
             response = generate_archived_feeds()
             assert isinstance(response, dict)
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_filter_null_dates_case_insensitive(self, mock_validate, mock_fetch):
         """Test that filter_null_dates is case insensitive"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -383,8 +383,8 @@ class TestQueryParameters:
             response = generate_archived_feeds()
             assert isinstance(response, dict)
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_no_query_params(self, mock_validate, mock_fetch):
         """Test that endpoint works without query params"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -407,8 +407,8 @@ class TestQueryParameters:
 class TestErrorHandling:
     """Test error handling"""
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_404_response_includes_feed_id(self, mock_validate, mock_fetch):
         """Test that 404 response includes feed_id"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -419,8 +419,8 @@ class TestErrorHandling:
             response = generate_archived_feeds()
             assert response[0]["feed_id"] == "mdb-999"
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_error_responses_include_error_field(self, mock_validate, mock_fetch):
         """Test that error responses include error field"""
         with patch.object(app, "current_request", create=True) as mock_request:
@@ -430,8 +430,8 @@ class TestErrorHandling:
             response = generate_archived_feeds()
             assert "error" in response[0]
 
-    @patch("app.app.fetch_datasets")
-    @patch("app.app.validate_feed_id")
+    @patch("src.app.fetch_datasets")
+    @patch("src.app.validate_feed_id")
     def test_500_response_structure(self, mock_validate, mock_fetch):
         """Test that 500 response has proper structure"""
         with patch.object(app, "current_request", create=True) as mock_request:

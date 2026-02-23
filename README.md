@@ -34,17 +34,17 @@ uv sync
 2. Set up environment variable with your MobilityDatabase API key:
 
 ```bash
-export MOBILITY_DB_API_KEY="your-access-token-here"
+export MOBILITY_DB_REFRESH_TOKEN="your-access-token-here"
 ```
 
-Or create a .env file with MOBILITY_DB_API_KEY="your-access-token-here"
+Or create a .env file with MOBILITY_DB_REFRESH_TOKEN="your-access-token-here"
 
 ## Getting an API Key
 
 1. Sign up at <https://mobilitydatabase.org>
 2. Go to Account Settings
 3. Find your "Refresh Token" or "Access Token"
-4. Use this token as your `MOBILITY_DB_API_KEY`
+4. Use this token as your `MOBILITY_DB_REFRESH_TOKEN`
 
 ## Local Development
 
@@ -126,7 +126,7 @@ curl http://localhost:8000/generate?feed_id=mdb-123
 
 ```json
 {
-  "error": "Unauthorized: API key required. Set MOBILITY_DB_API_KEY environment variable.",
+  "error": "Unauthorized: API key required. Set MOBILITY_DB_REFRESH_TOKEN environment variable.",
   "message": "Failed to generate archived feeds",
   "feed_id": "mdb-503"
 }
@@ -209,7 +209,7 @@ curl -s http://localhost:8000/generate?feed_id=mdb-503 | jq -r '.content' > arch
 ### With authentication (Python)
 
 ```bash
-MOBILITY_DB_API_KEY="your-token" \
+MOBILITY_DB_REFRESH_TOKEN="your-token" \
   python -c "from app import fetch_datasets, format_archived_feeds; \
   datasets = fetch_datasets('mdb-503'); \
   print(format_archived_feeds(datasets))"
@@ -230,17 +230,17 @@ aws configure
 2. Deploy using Chalice:
 
 ```bash
-MOBILITY_DB_API_KEY="your-token" chalice deploy
+MOBILITY_DB_REFRESH_TOKEN="your-token" chalice deploy
 ```
 
 3. Set environment variable in Lambda console:
-   - Add `MOBILITY_DB_API_KEY` to environment variables
+   - Add `MOBILITY_DB_REFRESH_TOKEN` to environment variables
 
 ## Configuration
 
 ### Environment Variables
 
-- `MOBILITY_DB_API_KEY` (required for API access): Your MobilityDatabase access token
+- `MOBILITY_DB_REFRESH_TOKEN` (required for API access): Your MobilityDatabase access token
 
 ### Constants
 
@@ -260,7 +260,7 @@ pytest test_app.py -v
 Test API integration:
 
 ```bash
-MOBILITY_DB_API_KEY="your-token" python test_api.py
+MOBILITY_DB_REFRESH_TOKEN="your-token" python test_api.py
 ```
 
 ## Data Format
@@ -279,7 +279,7 @@ The generated CSV follows the MBTA's archived_feeds.txt format:
 
 ### 401 Unauthorized
 
-- Make sure `MOBILITY_DB_API_KEY` environment variable is set
+- Make sure `MOBILITY_DB_REFRESH_TOKEN` environment variable is set
 - Verify your token is still valid (tokens may expire)
 - Get a new access token from mobilitydatabase.org
 

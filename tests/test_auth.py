@@ -17,7 +17,7 @@ class TestRefreshAccessToken:
         _token_cache["access_token"] = None
         _token_cache["expires_at"] = None
 
-    @patch("app.auth.requests.post")
+    @patch("src.auth.requests.post")
     def test_refresh_access_token_success(self, mock_post):
         """Test successful token refresh"""
         mock_response = Mock()
@@ -33,7 +33,7 @@ class TestRefreshAccessToken:
         assert _token_cache["access_token"] == "new-access-token"
         assert _token_cache["expires_at"] is not None
 
-    @patch("app.auth.requests.post")
+    @patch("src.auth.requests.post")
     def test_refresh_access_token_with_custom_expiry(self, mock_post):
         """Test token refresh with custom expiry time"""
         current_time = time.time()
@@ -51,7 +51,7 @@ class TestRefreshAccessToken:
         expected_expiry = current_time + 7200 - 60
         assert abs(_token_cache["expires_at"] - expected_expiry) < 2
 
-    @patch("app.auth.requests.post")
+    @patch("src.auth.requests.post")
     def test_refresh_access_token_default_expiry(self, mock_post):
         """Test that default expiry is 1 hour when not provided"""
         mock_response = Mock()
@@ -63,7 +63,7 @@ class TestRefreshAccessToken:
         assert token == "token123"
         assert _token_cache["expires_at"] is not None
 
-    @patch("app.auth.requests.post")
+    @patch("src.auth.requests.post")
     def test_refresh_access_token_invalid_refresh_token_empty(self, mock_post):
         """Test error with empty refresh token"""
         with pytest.raises(Exception) as exc_info:
@@ -71,7 +71,7 @@ class TestRefreshAccessToken:
 
         assert "Invalid refresh token format" in str(exc_info.value)
 
-    @patch("app.auth.requests.post")
+    @patch("src.auth.requests.post")
     def test_refresh_access_token_invalid_refresh_token_none(self, mock_post):
         """Test error with None refresh token"""
         with pytest.raises(Exception) as exc_info:
@@ -79,7 +79,7 @@ class TestRefreshAccessToken:
 
         assert "Invalid refresh token format" in str(exc_info.value)
 
-    @patch("app.auth.requests.post")
+    @patch("src.auth.requests.post")
     def test_refresh_access_token_invalid_refresh_token_short(self, mock_post):
         """Test error with too-short refresh token"""
         with pytest.raises(Exception) as exc_info:
@@ -87,7 +87,7 @@ class TestRefreshAccessToken:
 
         assert "Invalid refresh token format" in str(exc_info.value)
 
-    @patch("app.auth.requests.post")
+    @patch("src.auth.requests.post")
     def test_refresh_access_token_no_access_token_in_response(self, mock_post):
         """Test error when response has no access_token"""
         mock_response = Mock()
@@ -99,7 +99,7 @@ class TestRefreshAccessToken:
 
         assert "No access token in response" in str(exc_info.value)
 
-    @patch("app.auth.requests.post")
+    @patch("src.auth.requests.post")
     def test_refresh_access_token_network_error(self, mock_post):
         """Test handling of network errors"""
         mock_post.side_effect = Exception("Network timeout")
@@ -111,7 +111,7 @@ class TestRefreshAccessToken:
             exc_info.value
         ) or "Failed to refresh access token" in str(exc_info.value)
 
-    @patch("app.auth.requests.post")
+    @patch("src.auth.requests.post")
     def test_refresh_access_token_request_exception(self, mock_post):
         """Test handling of request exceptions"""
         import requests
@@ -123,7 +123,7 @@ class TestRefreshAccessToken:
 
         assert "Failed to refresh access token" in str(exc_info.value)
 
-    @patch("app.auth.requests.post")
+    @patch("src.auth.requests.post")
     def test_refresh_access_token_correct_endpoint(self, mock_post):
         """Test that correct token endpoint is used"""
         mock_response = Mock()
@@ -140,7 +140,7 @@ class TestRefreshAccessToken:
         assert "api.mobilitydatabase.org" in url
         assert "/tokens" in url
 
-    @patch("app.auth.requests.post")
+    @patch("src.auth.requests.post")
     def test_refresh_access_token_request_format(self, mock_post):
         """Test that refresh token is sent in correct format"""
         mock_response = Mock()
@@ -155,7 +155,7 @@ class TestRefreshAccessToken:
         call_kwargs = mock_post.call_args[1]
         assert call_kwargs["json"]["refresh_token"] == "my-refresh-token"
 
-    @patch("app.auth.requests.post")
+    @patch("src.auth.requests.post")
     def test_refresh_access_token_timeout_setting(self, mock_post):
         """Test that timeout is set for the request"""
         mock_response = Mock()
@@ -180,7 +180,7 @@ class TestGetValidAccessToken:
         _token_cache["access_token"] = None
         _token_cache["expires_at"] = None
 
-    @patch("app.auth.refresh_access_token")
+    @patch("src.auth.refresh_access_token")
     def test_get_valid_access_token_no_cache(self, mock_refresh):
         """Test getting token when cache is empty"""
         mock_refresh.return_value = "new-token"
@@ -192,7 +192,7 @@ class TestGetValidAccessToken:
         assert token == "new-token"
         mock_refresh.assert_called_once_with("refresh-token")
 
-    @patch("app.auth.refresh_access_token")
+    @patch("src.auth.refresh_access_token")
     def test_get_valid_access_token_cache_not_expired(self, mock_refresh):
         """Test that cached token is returned if not expired"""
         _token_cache["access_token"] = "cached-token"
@@ -204,7 +204,7 @@ class TestGetValidAccessToken:
         # refresh_access_token should not be called
         mock_refresh.assert_not_called()
 
-    @patch("app.auth.refresh_access_token")
+    @patch("src.auth.refresh_access_token")
     def test_get_valid_access_token_cache_expired(self, mock_refresh):
         """Test that new token is fetched when cache is expired"""
         _token_cache["access_token"] = "old-token"
@@ -216,7 +216,7 @@ class TestGetValidAccessToken:
         assert token == "new-token"
         mock_refresh.assert_called_once_with("refresh-token")
 
-    @patch("app.auth.refresh_access_token")
+    @patch("src.auth.refresh_access_token")
     def test_get_valid_access_token_no_expiry_time(self, mock_refresh):
         """Test that new token is fetched when expiry time is None"""
         _token_cache["access_token"] = "some-token"
@@ -228,7 +228,7 @@ class TestGetValidAccessToken:
         assert token == "new-token"
         mock_refresh.assert_called_once_with("refresh-token")
 
-    @patch("app.auth.refresh_access_token")
+    @patch("src.auth.refresh_access_token")
     def test_get_valid_access_token_no_cached_token(self, mock_refresh):
         """Test that new token is fetched when cached token is None"""
         _token_cache["access_token"] = None
@@ -249,7 +249,7 @@ class TestGetMobilityDbAuthHeader:
         _token_cache["access_token"] = None
         _token_cache["expires_at"] = None
 
-    @patch("app.auth.get_valid_access_token")
+    @patch("src.auth.get_valid_access_token")
     def test_get_mobility_db_auth_header_format(self, mock_get_token):
         """Test that auth header is in correct format"""
         mock_get_token.return_value = "test-access-token"
@@ -259,7 +259,7 @@ class TestGetMobilityDbAuthHeader:
         assert "Authorization" in header
         assert header["Authorization"] == "Bearer test-access-token"
 
-    @patch("app.auth.get_valid_access_token")
+    @patch("src.auth.get_valid_access_token")
     def test_get_mobility_db_auth_header_calls_get_valid_token(self, mock_get_token):
         """Test that get_valid_access_token is called"""
         mock_get_token.return_value = "token"
@@ -268,7 +268,7 @@ class TestGetMobilityDbAuthHeader:
 
         mock_get_token.assert_called_once_with("my-refresh-token")
 
-    @patch("app.auth.get_valid_access_token")
+    @patch("src.auth.get_valid_access_token")
     def test_get_mobility_db_auth_header_different_tokens(self, mock_get_token):
         """Test with different token values"""
         mock_get_token.return_value = "long-token-value-12345"
@@ -277,7 +277,7 @@ class TestGetMobilityDbAuthHeader:
 
         assert header["Authorization"] == "Bearer long-token-value-12345"
 
-    @patch("app.auth.get_valid_access_token")
+    @patch("src.auth.get_valid_access_token")
     def test_get_mobility_db_auth_header_error_propagation(self, mock_get_token):
         """Test that exceptions are propagated"""
         mock_get_token.side_effect = Exception("Token refresh failed")
@@ -296,7 +296,7 @@ class TestTokenCache:
         _token_cache["access_token"] = None
         _token_cache["expires_at"] = None
 
-    @patch("app.auth.requests.post")
+    @patch("src.auth.requests.post")
     def test_token_cache_stores_token(self, mock_post):
         """Test that token is stored in cache"""
         mock_response = Mock()
@@ -310,7 +310,7 @@ class TestTokenCache:
 
         assert _token_cache["access_token"] == "cached-token"
 
-    @patch("app.auth.requests.post")
+    @patch("src.auth.requests.post")
     def test_token_cache_stores_expiry(self, mock_post):
         """Test that expiry time is stored in cache"""
         mock_response = Mock()
@@ -325,7 +325,7 @@ class TestTokenCache:
         assert _token_cache["expires_at"] is not None
         assert isinstance(_token_cache["expires_at"], float)
 
-    @patch("app.auth.requests.post")
+    @patch("src.auth.requests.post")
     def test_token_cache_resets_on_new_token(self, mock_post):
         """Test that cache is properly updated on new token"""
         _token_cache["access_token"] = "old-token"
@@ -342,7 +342,7 @@ class TestTokenCache:
 
         assert _token_cache["access_token"] == "new-token"
 
-    @patch("app.auth.requests.post")
+    @patch("src.auth.requests.post")
     def test_token_refresh_happens_60_seconds_before_expiry(self, mock_post):
         """Test that token refresh threshold is 60 seconds"""
         current_time = time.time()

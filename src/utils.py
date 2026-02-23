@@ -1,7 +1,9 @@
+import re
 import requests
 from datetime import datetime
 from io import StringIO
 import csv
+from urllib.parse import quote
 from auth import get_mobility_db_auth_header
 from constants import MOBILITY_DB_API, MOBILITY_DB_REFRESH_TOKEN
 
@@ -11,9 +13,8 @@ def validate_feed_id(feed_id):
     if not feed_id:
         return False, "Feed ID is required"
 
-    # # MobilityDatabase feed IDs follow pattern: mdb-{number}
-    # if not re.match(r'^mdb-\d+$', feed_id):
-    #     return False, f"Invalid feed ID format: {feed_id}. Expected format: mdb-123"
+    if not re.match(r"^mdb-\d+$", feed_id):
+        return False, f"Invalid feed ID format: {feed_id}. Expected format: mdb-123"
 
     return True, None
 
@@ -21,7 +22,7 @@ def validate_feed_id(feed_id):
 def fetch_datasets(feed_id):
     """Fetch all datasets for a given feed from MobilityDatabase"""
     try:
-        url = f"{MOBILITY_DB_API}/gtfs_feeds/{feed_id}/datasets"
+        url = f"{MOBILITY_DB_API}/gtfs_feeds/{quote(feed_id, safe='')}/datasets"
         headers = {"Accept": "application/json", "User-Agent": "archived-feeds-api/1.0"}
 
         # Add authorization using refresh token
@@ -41,11 +42,14 @@ def fetch_datasets(feed_id):
         else:
             return []
 
+    except requests.exceptions.HTTPError as e:
+        if e.response is not None and e.response.status_code == 401:
+            raise Exception(
+                "Unauthorized: Failed to authenticate with MobilityDatabase. Check MOBILITY_DB_REFRESH_TOKEN environment variable."
+            )
+        raise Exception(f"Failed to fetch datasets from MobilityDatabase: {str(e)}")
     except requests.exceptions.RequestException as e:
-        error_msg = str(e)
-        if "401" in error_msg:
-            error_msg = "Unauthorized: Failed to authenticate with MobilityDatabase. Check MOBILITY_DB_REFRESH_TOKEN environment variable."
-        raise Exception(f"Failed to fetch datasets from MobilityDatabase: {error_msg}")
+        raise Exception(f"Failed to fetch datasets from MobilityDatabase: {str(e)}")
 
 
 def format_archived_feeds(datasets, filter_null_dates=False):
@@ -85,7 +89,7 @@ def format_archived_feeds(datasets, filter_null_dates=False):
 
         # Use downloaded_at timestamp as feed_version
         downloaded_at = dataset.get("downloaded_at", "")
-        feed_version = f"{downloaded_at}"
+        feed_version = downloaded_at
 
         # Get the hosted URL from Mobility Database
         archive_url = dataset.get("hosted_url", "")
